@@ -35,16 +35,8 @@ public class NameIdentity {
         return patronymic;
     }
 
-    public String toStringLine() {
-        return firstName + " " + secondName + " " + patronymic;
-    }
-
     @Override
     public String toString() {
-        return "NameIdentity{" +
-                "firstName='" + firstName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", patronymic='" + patronymic + '\'' +
-                '}';
+        return firstName + " " + secondName + " " + patronymic;
     }
 }
