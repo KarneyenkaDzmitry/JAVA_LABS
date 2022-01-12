@@ -25,9 +25,9 @@ public class Main {
         prn("This is " + (file.isFile() ? " normal file" : " a named pipe"));
     }
 
-    public static void printTextFileContent(BufferedReader reader) throws IOException {
+    public static void printTextFileContent(String content) {
         prn("------------------------------------------------------------");
-        prn(readText(reader));
+        prn(content);
         prn("------------------------------------------------------------");
     }
 
@@ -39,43 +39,81 @@ public class Main {
         return stringBuffer.deleteCharAt(stringBuffer.length()-1).toString();
     }
 
-    public static int readInt(BufferedReader reader) throws IOException {
+    private static int readInt(BufferedReader reader) throws IOException {
         String line = reader.readLine();
         return Integer.parseInt(line.trim());
     }
 
+    private static int getRandomIntNumber(int from, int till){
+        return (int) (from + Math.random()*till);
+    };
+
+    private static void writeToFile(FileOutputStream fileOutputStream, String string) throws IOException {
+        fileOutputStream.write(string.getBytes(StandardCharsets.UTF_8));
+    }
     public static void main(String[] args) throws IOException {
-        /** Task 1 */
+        /** Task 1:
+         * Создать файл с информацией о себе. Вывести данные об этом
+         * файле. Вывести информацию из файла.
+         */
         File file = new File(
-                "src/com/example/lab_8_1/example_1.txt");
+                "src/com/example/lab_8_1/self_presentation.txt");
         printFileProperties(file);
-        printTextFileContent(new BufferedReader(new FileReader(file)));
+        printTextFileContent(readText(new BufferedReader(new FileReader(file))));
 
-        /** Tsk 2 */
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        OutputStream outputStream  = new FileOutputStream("src/com/example/lab_8_1/example_2.txt");
+        /** Tsk 2:
+         * Ввести с клавиатуры в файл f 10 целых чисел. Затем открыть файл
+         * для чтения, считать числа, вывести их на экран и определить среднее
+         * значение
+         */
+        BufferedReader inputReader = new BufferedReader(new InputStreamReader(System.in));
+        FileOutputStream fileOutputStream  = new FileOutputStream("src/com/example/lab_8_1/task_2.txt");
         for (int i = 0; i < 10 ; i++) {
-            Integer number = readInt(reader);
-            outputStream.write(number.toString().getBytes(StandardCharsets.UTF_8));
-            outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
-        }
-        reader.close();
-        outputStream.close();
+            Integer number = readInt(inputReader);
+            writeToFile(fileOutputStream, (number.toString() + "\r\n"));
 
-        BufferedReader fio1 = new BufferedReader(new FileReader("src/com/example/lab_8_1/example_2.txt"));
-        prn("I am here");
-        String line;
+        }
+        inputReader.close();
+        fileOutputStream.close();
+
+        BufferedReader reader = new BufferedReader(new FileReader("src/com/example/lab_8_1/task_2.txt"));
         Double average = 0.0;
         Integer summ = 0;
-        while (fio1.ready()) {
-            Integer number = readInt(fio1);
+        while (reader.ready()) {
+            Integer number = readInt(reader);
             summ += number;
             prn(number.toString());
         }
         average = summ.doubleValue()/10;
         prn("An Averaged value is: " + average);
-        fio1.close();
+        reader.close();
 
-        /** Task 3 */
+        /** Task 3:
+         *  Создать типизированный файл f, компонентами которого являются
+         * целые случайные числа. Записать в файл g все четные числа файла из f, а в
+         * файл h – все нечетные. Порядок следования чисел сохраняется.
+         */
+        FileOutputStream fileOutputStream_f = new FileOutputStream("src/com/example/lab_8_1/task_3_f.txt");
+        for (int i = 0; i < getRandomIntNumber(15, 90); i++) {
+            Integer number = getRandomIntNumber(1, 9000);
+            writeToFile(fileOutputStream_f, (number.toString() + "\r\n"));
+        }
+        fileOutputStream_f.close();
+
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("src/com/example/lab_8_1/task_3_f.txt"));
+        FileOutputStream fileOutputStream_g = new FileOutputStream("src/com/example/lab_8_1/task_3_g.txt");
+        FileOutputStream fileOutputStream_h = new FileOutputStream("src/com/example/lab_8_1/task_3_h.txt");
+
+        while (bufferedReader.ready()) {
+            Integer number = readInt(bufferedReader);
+            if (number % 2 == 0) {
+                writeToFile(fileOutputStream_g, (number.toString() + "\r\n"));
+            } else {
+                writeToFile(fileOutputStream_h, (number.toString() + "\r\n"));
+            }
+        }
+        bufferedReader.close();
+        fileOutputStream_h.close();
+        fileOutputStream_g.close();
     }
 }
